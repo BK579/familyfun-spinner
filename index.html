@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FamilyFun Spinner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fffaf2;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .app-container {
+      max-width: 600px;
+      width: 100%;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      padding: 30px;
+    }
+    h1 {
+      text-align: center;
+      color: #e07a5f;
+    }
+    select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #f4a261;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #e76f51;
+    }
+    .activity-display {
+      margin-top: 20px;
+      background: #fef6e4;
+      border-left: 5px solid #e07a5f;
+      padding: 15px;
+      border-radius: 10px;
+    }
+    .activity-title {
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .history {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <h1>🎲 FamilyFun Spinner</h1>
+  <label for="language">🌐 Language</label>
+  <select id="language">
+    <option value="en">English</option>
+    <option value="de">Deutsch</option>
+    <option value="al">Shqip</option>
+  </select>
+  <label for="category">📂 Category</label>
+  <select id="category">
+    <option value="outdoor">🌿 Outdoor</option>
+    <option value="home">🏠 Cozy Home</option>
+    <option value="creative">🎭 Creative</option>
+    <option value="emotion">💬 Emotional</option>
+    <option value="rainy">🌧️ Rainy Day</option>
+  </select>
+  <button onclick="generateActivity()">🎉 Show Me an Activity!</button>
+  <div id="activity" class="activity-display"></div>
+  <div class="history">
+    <strong>Last 7 Activities:</strong>
+    <ul id="history-list"></ul>
+  </div>
+</div>
+<script src="activities.js"></script>
+<script>
+let lastActivities = [];
+let unused = {};
+function generateActivity() {
+  const lang = document.getElementById("language").value;
+  const cat = document.getElementById("category").value;
+  if (!activities[lang] || !activities[lang][cat]) {
+    document.getElementById("activity").innerHTML = "<em>No activities available in this category yet.</em>";
+    return;
+  }
+  if (!unused[lang]) unused[lang] = {};
+  if (!unused[lang][cat] || unused[lang][cat].length === 0) {
+    unused[lang][cat] = [...activities[lang][cat]];
+  }
+  const index = Math.floor(Math.random() * unused[lang][cat].length);
+  const selected = unused[lang][cat].splice(index, 1)[0];
+  document.getElementById("activity").innerHTML = `
+    <div class="activity-title">${selected.title}</div>
+    <div>${selected.desc}</div>
+  `;
+  lastActivities.unshift(selected.title);
+  if (lastActivities.length > 7) lastActivities.pop();
+  document.getElementById("history-list").innerHTML = lastActivities.map(item => `<li>${item}</li>`).join("");
+}
+</script>
+<script>
+const activities = {
+  "en": {
+    "outdoor": [{"title":"Nature Walk + Treasure Hunt","desc":"Find a leaf, feather, or heart-shaped rock while walking."}]
+  },
+  "de": {
+    "outdoor": [{"title":"Naturspaziergang & Schatzsuche","desc":"Sucht ein Blatt, eine Feder oder einen herzförmigen Stein."}]
+  },
+  "al": {
+    "outdoor": [{"title":"Shëtitje në Natyrë & Kërkim Thesari","desc":"Gjeni një gjethe, pendë ose gur në formë zemre."}]
+  }
+}
+</script>
+</body>
+</html>
