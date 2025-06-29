@@ -1,0 +1,461 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FamilyFun Spinner</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #fffaf2;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .app-container {
+            max-width: 600px;
+            width: 100%;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        h1 {
+            text-align: center;
+            color: #e07a5f;
+        }
+        select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #f4a261;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #e76f51;
+        }
+        .activity-display {
+            margin-top: 20px;
+            background: #fef6e4;
+            border-left: 5px solid #e07a5f;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        .activity-title {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .history {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <h1>🎲 FamilyFun Spinner</h1>
+    <label for="language">🌐 Language</label>
+    <select id="language">
+        <option value="en">English</option>
+        <option value="de">Deutsch</option>
+        <option value="al">Shqip</option>
+    </select>
+
+    <label for="category">📂 Category</label>
+    <select id="category">
+        <option value="outdoor">🌿 Outdoor</option>
+        <option value="home">🏠 Cozy Home</option>
+        <option value="creative">🎭 Creative</option>
+        <option value="emotion">💬 Emotional</option>
+        <option value="rainy">🌧️ Rainy Day</option>
+    </select>
+
+    <button onclick="generateActivity()">🎉 Show Me an Activity!</button>
+
+    <div id="activity" class="activity-display"></div>
+    <div class="history">
+        <strong>Last 7 Activities:</strong>
+        <ul id="history-list"></ul>
+    </div>
+</div>
+<script>
+const activities = {
+    "en": {
+        "outdoor": [
+            {
+                "title": "Nature Walk + Treasure Hunt",
+                "desc": "Find a leaf, feather, or heart-shaped rock while walking."
+            },
+            {
+                "title": "Picnic in the Park",
+                "desc": "Simple snack time on a blanket. Bring a toy or sketchbook."
+            },
+            {
+                "title": "Playground Hour",
+                "desc": "Follow their lead – swing, climb, and laugh together."
+            },
+            {
+                "title": "Bike / Scooter Ride",
+                "desc": "Explore a nearby path or around the block."
+            },
+            {
+                "title": "Sunset Hide and Seek",
+                "desc": "Chase shadows or hide in the golden hour light."
+            }
+        ],
+        "home": [
+            {
+                "title": "Craft Corner",
+                "desc": "Draw dream houses or make paper monsters."
+            },
+            {
+                "title": "Kitchen Time",
+                "desc": "Mix, pour, wash – cook as a team!"
+            },
+            {
+                "title": "Board Games Night",
+                "desc": "Try Orchard or UNO Junior for family fun."
+            },
+            {
+                "title": "Storytime Fort",
+                "desc": "Read books under a cozy blanket fort."
+            },
+            {
+                "title": "Family Spa Night",
+                "desc": "Foot baths, hair brushing, gentle calm."
+            }
+        ],
+        "creative": [
+            {
+                "title": "Living Room Disco",
+                "desc": "Each child picks a song and everyone dances!"
+            },
+            {
+                "title": "Puppet Theater",
+                "desc": "Use socks or toys to tell fun mini stories."
+            },
+            {
+                "title": "Dress-Up Adventure",
+                "desc": "Pretend to be explorers or chefs. Get creative!"
+            },
+            {
+                "title": "Mini Talent Show",
+                "desc": "Sing, tell jokes, do tricks – all shine!"
+            },
+            {
+                "title": "Build Together",
+                "desc": "Use blocks, pillows, or LEGO to make something cool."
+            }
+        ],
+        "emotion": [
+            {
+                "title": "Best Part of the Day Talk",
+                "desc": "Each person shares the best part of their day."
+            },
+            {
+                "title": "Gratitude Jar",
+                "desc": "Write or draw 1 thing you loved today."
+            },
+            {
+                "title": "Photo Wall Time",
+                "desc": "Print and decorate a memory from the week."
+            },
+            {
+                "title": "Kindness Star",
+                "desc": "Vote who showed kindness. They wear a star tomorrow."
+            }
+        ],
+        "rainy": [
+            {
+                "title": "Bubble Bath + Songs",
+                "desc": "Sing or listen to music while splashing around."
+            },
+            {
+                "title": "Indoor Obstacle Course",
+                "desc": "Jump, crawl, and slide over soft things at home."
+            },
+            {
+                "title": "Movie Night",
+                "desc": "Pick a cozy movie and snuggle with popcorn."
+            },
+            {
+                "title": "Yoga or Stretch",
+                "desc": "Stretch like animals – fun and calming!"
+            },
+            {
+                "title": "Audio + Drawing",
+                "desc": "Listen to a story and draw what you imagine."
+            },
+            {
+                "title": "Dream Map Collage",
+                "desc": "Cut out dreams from magazines to make a poster."
+            }
+        ]
+    },
+    "de": {
+        "outdoor": [
+            {
+                "title": "Naturspaziergang & Schatzsuche",
+                "desc": "Sucht ein Blatt, eine Feder oder einen herzförmigen Stein."
+            },
+            {
+                "title": "Picknick im Park",
+                "desc": "Snacks auf der Decke mit Spielzeug oder Malbuch."
+            },
+            {
+                "title": "Spielplatz-Stunde",
+                "desc": "Folge dem Kind – schaukeln, klettern, lachen."
+            },
+            {
+                "title": "Fahrrad-/Rollertour",
+                "desc": "Entdeckt neue Wege in der Nachbarschaft."
+            },
+            {
+                "title": "Verstecken bei Sonnenuntergang",
+                "desc": "Spiele im Schattenlicht zum Tagesende."
+            }
+        ],
+        "home": [
+            {
+                "title": "Bastel-Ecke",
+                "desc": "Traumhäuser zeichnen oder Monster basteln."
+            },
+            {
+                "title": "Küchenzeit",
+                "desc": "Rühren, gießen, waschen – gemeinsam kochen."
+            },
+            {
+                "title": "Spieleabend",
+                "desc": "UNO Junior oder Obstgarten gemeinsam spielen."
+            },
+            {
+                "title": "Lesehöhle",
+                "desc": "Bücher lesen in einer Deckenburg."
+            },
+            {
+                "title": "Familien-Spa-Abend",
+                "desc": "Fußbad, Haare bürsten, leise Musik genießen."
+            }
+        ],
+        "creative": [
+            {
+                "title": "Wohnzimmer-Disco",
+                "desc": "Jedes Kind wählt ein Lied – tanzen los!"
+            },
+            {
+                "title": "Puppentheater",
+                "desc": "Socken oder Spielzeug werden zu Stars auf der Bühne."
+            },
+            {
+                "title": "Verkleidungsabenteuer",
+                "desc": "Entdecker, Astronauten oder Köche spielen."
+            },
+            {
+                "title": "Mini-Talentshow",
+                "desc": "Singen, Witze erzählen, tanzen – Applaus für alle!"
+            },
+            {
+                "title": "Gemeinsam Bauen",
+                "desc": "Mit Bausteinen, Kartons oder Kissen kreativ bauen."
+            }
+        ],
+        "emotion": [
+            {
+                "title": "Was war heute schön?",
+                "desc": "Jeder erzählt, was ihm heute gefallen hat."
+            },
+            {
+                "title": "Dankbarkeitsglas",
+                "desc": "Täglich etwas Schönes malen oder schreiben."
+            },
+            {
+                "title": "Fotowand-Zeit",
+                "desc": "Erinnerung ausdrucken & an die Wand hängen."
+            },
+            {
+                "title": "Freundlichkeitsstern",
+                "desc": "Der Netteste bekommt einen Stern zum Tragen."
+            }
+        ],
+        "rainy": [
+            {
+                "title": "Badespaß & Lieder",
+                "desc": "Singen und spielen in der Badewanne."
+            },
+            {
+                "title": "Hindernisparcours drinnen",
+                "desc": "Klettern, kriechen, springen – Spaß im Wohnzimmer."
+            },
+            {
+                "title": "Filmabend",
+                "desc": "Kuscheln mit Decke & Popcorn zum Lieblingsfilm."
+            },
+            {
+                "title": "Kinder-Yoga",
+                "desc": "Strecken wie Tiere – entspannend & lustig."
+            },
+            {
+                "title": "Hörspiel & Malen",
+                "desc": "Beim Zuhören zeichnen, was man sich vorstellt."
+            },
+            {
+                "title": "Traum-Collage",
+                "desc": "Wünsche aus Zeitschriften zu einem Plakat kleben."
+            }
+        ]
+    },
+    "al": {
+        "outdoor": [
+            {
+                "title": "Shëtitje në Natyrë & Kërkim Thesari",
+                "desc": "Gjeni një gjethe, pendë ose gur në formë zemre."
+            },
+            {
+                "title": "Piknik në Park",
+                "desc": "Ushqim i lehtë mbi batanije, merrni lodra ose libra vizatimi."
+            },
+            {
+                "title": "Orë në Lodrat e Parkut",
+                "desc": "Ndiqni lojën e tyre – kërceni, ngjituni, qeshni."
+            },
+            {
+                "title": "Ecje me Biçikletë/Skuter",
+                "desc": "Eksploroni lagjen ose ndonjë shteg afër."
+            },
+            {
+                "title": "Loja në Perëndim të Diellit",
+                "desc": "Luani me hije ose fshehje në dritën e mbrëmjes."
+            }
+        ],
+        "home": [
+            {
+                "title": "Kënd Krijimi",
+                "desc": "Vizato shtëpi ëndrrash ose krijo përbindësha prej letre."
+            },
+            {
+                "title": "Kohë në Kuzhinë",
+                "desc": "Përzieni, derdhni, lani – gatuani së bashku."
+            },
+            {
+                "title": "Mbrëmje Lojërash",
+                "desc": "Luani lojëra si UNO Junior ose Orchard."
+            },
+            {
+                "title": "Fortesë për Tregime",
+                "desc": "Lexoni libra brenda fortesës prej batanijesh."
+            },
+            {
+                "title": "Mbrëmje Spa Familjare",
+                "desc": "Banjo këmbësh, krehje flokësh dhe muzikë e qetë."
+            }
+        ],
+        "creative": [
+            {
+                "title": "Disko në Dhomë",
+                "desc": "Çdo fëmijë zgjedh një këngë dhe kërcejmë të gjithë!"
+            },
+            {
+                "title": "Teatri me Kukulla",
+                "desc": "Përdorni çorape ose lodra për histori argëtuese."
+            },
+            {
+                "title": "Lojë Me Role",
+                "desc": "Luani eksplorues, astronautë apo kuzhinierë."
+            },
+            {
+                "title": "Shfaqje Talentesh",
+                "desc": "Këndim, shaka, truke – të gjithë ndihen yje!"
+            },
+            {
+                "title": "Ndërtoni Së Bashku",
+                "desc": "Me lego, kuti ose jastëkë bëni një krijim të veçantë."
+            }
+        ],
+        "emotion": [
+            {
+                "title": "Pjesa Më e Mirë e Ditës",
+                "desc": "Secili rrëfen çfarë e ka bërë të lumtur sot."
+            },
+            {
+                "title": "Kavanozi i Mirënjohjes",
+                "desc": "Shkruani ose vizatoni një moment të bukur çdo ditë."
+            },
+            {
+                "title": "Muri i Kujtimeve",
+                "desc": "Printoni një kujtim javor dhe dekoroni murin."
+            },
+            {
+                "title": "Ylli i Mirësisë",
+                "desc": "Zgjidhni kush ishte më i sjellshmi – ai/ajo merr një yll."
+            }
+        ],
+        "rainy": [
+            {
+                "title": "Banjo me Këngë",
+                "desc": "Këndoni ose dëgjoni muzikë gjatë larjes."
+            },
+            {
+                "title": "Pengesa Brenda",
+                "desc": "Ndërtoni një pistë me jastëkë dhe kaloni sfidat."
+            },
+            {
+                "title": "Mbrëmje Filmi",
+                "desc": "Zgjidhni një film dhe shikoni me kokoshka dhe batanije."
+            },
+            {
+                "title": "Shtrirje ose Yoga",
+                "desc": "Bëni lëvizje si kafshë – argëtuese dhe relaksuese."
+            },
+            {
+                "title": "Tregim me Vizatim",
+                "desc": "Dëgjoni një tregim dhe vizatoni imagjinatën tuaj."
+            },
+            {
+                "title": "Kollaazh Ëndrrash",
+                "desc": "Prisni figura nga revista dhe krijoni një poster ëndrrash."
+            }
+        ]
+    }
+};
+
+let lastActivities = [];
+let unused = {};
+
+function generateActivity() {
+    const lang = document.getElementById("language").value;
+    const cat = document.getElementById("category").value;
+    if (!activities[lang] || !activities[lang][cat]) {
+        document.getElementById("activity").innerHTML = "<em>No activities available in this category yet.</em>";
+        return;
+    }
+    if (!unused[lang]) unused[lang] = {};
+    if (!unused[lang][cat] || unused[lang][cat].length === 0) {
+        unused[lang][cat] = [...activities[lang][cat]];
+    }
+    const index = Math.floor(Math.random() * unused[lang][cat].length);
+    const selected = unused[lang][cat].splice(index, 1)[0];
+
+    document.getElementById("activity").innerHTML = `
+        <div class="activity-title">${selected.title}</div>
+        <div>${selected.desc}</div>
+    `;
+
+    lastActivities.unshift(selected.title);
+    if (lastActivities.length > 7) lastActivities.pop();
+
+    document.getElementById("history-list").innerHTML = lastActivities.map(item => `<li>${item}</li>`).join("");
+}
+</script>
+</body>
+</html>
