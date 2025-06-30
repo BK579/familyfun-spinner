@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FamilyFun Spinner</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#ff944d"/>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js');
+      });
+    }
+  </script>
+  <link rel="icon" type="image/png" href="icon-192.png" />
+</head>
+<body>
+<!-- Original HTML content will be inserted here -->
+
+  <div id="app-container">
+    <h1>🎯 FamilyFun Spinner</h1>
+    <p class="subtitle">Pick. Spin. Play!</p>
+
+    <div class="lang-selector">
+      <button class="lang-btn" data-lang="en">🇬🇧</button>
+      <button class="lang-btn" data-lang="de">🇩🇪</button>
+      <button class="lang-btn" data-lang="sq">🇦🇱</button>
+    </div>
+
+    <div id="category-buttons" class="category-selector"></div>
+    <div id="category" class="category-label"></div>
+
+    <button id="generate-btn" class="generate-button">🎲 Show Me an Activity!</button>
+
+    <div id="activity-card" class="activity-card">
+      <h2 id="activity-title">Your activity will appear here</h2>
+      <p id="activity-desc"></p>
+    </div>
+
+    <h3>Recent Activities</h3>
+    <div id="history" class="history-container"></div>
+  </div>
+
+  <script>
+    const data = {"en": {"Outdoor": [{"title": "Nature Walk + Treasure Hunt", "description": "Find things like a feather, heart-shaped rock, or leaf. Explore together!"}, {"title": "Picnic in the Park", "description": "Simple dinner or snack on a blanket. Kids can bring a toy or drawing kit."}, {"title": "Playground Hour", "description": "Let the kids lead. Push swings, climb, laugh, and be silly."}, {"title": "Bike / Scooter Ride Adventure", "description": "Explore your neighborhood or nearby paths together."}, {"title": "Shadow Chase at Sunset", "description": "Play hide and seek or chase shadows in the golden hour."}], "Cozy Home": [{"title": "Family Drawing or Craft Corner", "description": "Rotate themes: 'Draw your dream house' or 'Make a paper monster'."}, {"title": "Kitchen Time Together", "description": "Make snacks or dinner with tasks for every age - pour, wash, mix."}, {"title": "Board Games / Puzzle Night", "description": "Play age-appropriate games like UNO Junior or simple puzzles."}, {"title": "Storytime Fort", "description": "Build a blanket fort and read books by flashlight."}, {"title": "Family Spa Night", "description": "Foot baths, hair brushing, gentle music \u2013 calm and bonding time."}], "Creative": [{"title": "Living Room Disco", "description": "15-minute dance party. Each child can DJ one song!"}, {"title": "Puppet Theater / Toy Story Show", "description": "Make a story with socks, toys, or paper puppets."}, {"title": "Dress-Up & Role Play", "description": "Be explorers, chefs, astronauts \u2013 use household items creatively."}, {"title": "Mini Talent Show", "description": "Let each person share a song, trick, or joke!"}, {"title": "Build Something Challenge", "description": "Use LEGO, pillows or blocks to co-create a masterpiece."}], "Emotional": [{"title": "Family Round Table", "description": "Share the best part of your day. Build listening habits."}, {"title": "Gratitude Jar", "description": "Everyone writes or draws 1 thing they loved today."}, {"title": "Photo or Memory Wall", "description": "Pin a photo or draw something great from the week."}, {"title": "Kindness Star of the Day", "description": "Vote who was kindest. They wear a star the next day."}], "Rainy Day": [{"title": "Bubble Bath + Songs Night", "description": "Turn bath time into fun with crayons, toys, and music."}, {"title": "Indoor Obstacle Course", "description": "Use cushions, tape, tunnels. Let kids design it too!"}, {"title": "Movie Night with Popcorn", "description": "Kids pick the movie. Cozy blankets and bonding time."}, {"title": "Yoga or Stretch Together", "description": "Call it 'stretch and smile' \u2013 kids love copying poses."}, {"title": "Audio Story + Drawing", "description": "Listen to a fairy tale and draw what comes to mind."}, {"title": "Dream Map Collage", "description": "Cut magazine images and make a shared family dream board."}]}, "de": {"Outdoor": [{"title": "Naturspaziergang + Schatzsuche", "description": "Finde Dinge wie eine Feder, herzf\u00f6rmigen Stein oder Blatt. Gemeinsam entdecken!"}, {"title": "Picknick im Park", "description": "Einfaches Abendessen oder Snack auf einer Decke. Kinder bringen ein Spielzeug oder Malset mit."}, {"title": "Spielplatzstunde", "description": "Lass die Kinder f\u00fchren. Schaukeln, klettern, lachen \u2013 mach mit!"}, {"title": "Fahrrad- oder Rollerabenteuer", "description": "Gemeinsam die Nachbarschaft oder nahe Wege erkunden."}, {"title": "Schattenjagd bei Sonnenuntergang", "description": "Verstecken spielen oder Schatten jagen im Abendlicht."}], "Cozy Home": [{"title": "Familienzeichen- oder Bastelzeit", "description": "Wechselt Themen: 'Male dein Traumhaus' oder 'Baue ein Papiermonster'."}, {"title": "Gemeinsam in der K\u00fcche", "description": "Snacks oder Abendessen gemeinsam zubereiten \u2013 r\u00fchren, waschen, gie\u00dfen."}, {"title": "Brettspiel- oder Puzzleabend", "description": "Kindgerechte Spiele wie UNO Junior oder einfache Puzzles."}, {"title": "Vorlesefest im Deckenfort", "description": "Baut ein Fort aus Decken und lest mit Taschenlampe B\u00fccher."}, {"title": "Familienspa-Abend", "description": "Fu\u00dfb\u00e4der, Haare b\u00fcrsten, sanfte Musik \u2013 entspannend und verbindend."}], "Creative": [{"title": "Wohnzimmer-Disco", "description": "15 Minuten Tanzparty. Jedes Kind darf ein Lied aussuchen!"}, {"title": "Puppentheater / Spielzeuggeschichte", "description": "Geschichte mit Socken, Spielzeug oder Papierpuppen erfinden."}, {"title": "Verkleiden & Rollenspiele", "description": "Sei Forscher, Koch oder Astronaut \u2013 Haushaltsgegenst\u00e4nde kreativ nutzen."}, {"title": "Mini-Talentshow", "description": "Jeder darf einen Trick, Witz oder Song zeigen!"}, {"title": "Bau-Challenge", "description": "Mit LEGO, Kissen oder Bl\u00f6cken gemeinsam ein Werk erschaffen."}], "Emotional": [{"title": "Familienrunde", "description": "Teilt den sch\u00f6nsten Moment des Tages. F\u00f6rdert Zuh\u00f6ren und N\u00e4he."}, {"title": "Dankbarkeitsglas", "description": "Jeder schreibt oder zeichnet 1 sch\u00f6ne Sache vom Tag."}, {"title": "Foto- oder Erinnerungswand", "description": "Ein sch\u00f6nes Bild der Woche aufh\u00e4ngen oder malen."}, {"title": "Freundlichkeitsstern des Tages", "description": "W\u00e4hlt, wer heute besonders freundlich war. Stern tragen am n\u00e4chsten Tag."}], "Rainy Day": [{"title": "Badespa\u00df + Liederabend", "description": "Baden wird zum Spa\u00df mit Farben, Spielzeug & Musik."}, {"title": "Indoor-Hindernisparcours", "description": "Mit Kissen, Klebeband & Tunneln. Kinder d\u00fcrfen gestalten!"}, {"title": "Filmabend mit Popcorn", "description": "Kinder w\u00e4hlen den Film. Mit Decken einkuscheln."}, {"title": "Yoga oder Dehnen gemeinsam", "description": "Nenn es 'L\u00e4chel-Dehnen' \u2013 Kinder lieben es, Posen nachzumachen."}, {"title": "H\u00f6rgeschichte + Malen", "description": "M\u00e4rchen h\u00f6ren und dabei das Geh\u00f6rte malen."}, {"title": "Traum-Collage", "description": "Aus Magazinen Bilder ausschneiden und Familien-Traumbild gestalten."}]}, "sq": {"Outdoor": [{"title": "Sh\u00ebtitje + Gjueti Thesari", "description": "Gjej sende si pend\u00eb, gur\u00eb n\u00eb form\u00eb zemre apo gjethe. Eksploroni s\u00eb bashku!"}, {"title": "Piknik n\u00eb Park", "description": "Dark\u00eb ose ushqim i leht\u00eb mbi nj\u00eb batanije. F\u00ebmij\u00ebt mund t\u00eb marrin lodra apo mjete vizatimi."}, {"title": "Or\u00eb n\u00eb Loj\u00ebrat e F\u00ebmij\u00ebve", "description": "L\u00ebri f\u00ebmij\u00ebt t\u00eb udh\u00ebheqin. Luani s\u00eb bashku, qeshni dhe k\u00ebrceni."}, {"title": "Sh\u00ebtitje me Bi\u00e7iklet\u00eb apo Skuter", "description": "Zbuloni s\u00eb bashku lagjen ose shtigjet p\u00ebrreth."}, {"title": "Ndjekja e Hijes n\u00eb Per\u00ebndim", "description": "Luani kukafsheh apo ndiqni hijet gjat\u00eb per\u00ebndimit t\u00eb diellit."}], "Cozy Home": [{"title": "K\u00ebnd Krijimi me Vizatim apo Pun\u00ebdore", "description": "Nd\u00ebrroni temat: 'Vizato sht\u00ebpin\u00eb t\u00ebnde t\u00eb \u00ebndrrave' apo 'B\u00ebj nj\u00eb p\u00ebrbind\u00ebsh me let\u00ebr'."}, {"title": "Gatim s\u00eb Bashku", "description": "P\u00ebrgatitni ushqime apo dark\u00ebn bashk\u00eb \u2013 p\u00ebrzihni, lani, derdhni."}, {"title": "Mbr\u00ebmje me Loj\u00ebra Tavoline", "description": "Loj\u00ebra t\u00eb p\u00ebrshtatshme p\u00ebr mosh\u00ebn si UNO Junior ose puzzle t\u00eb thjeshta."}, {"title": "Lexim n\u00eb Kalat\u00eb me Batanije", "description": "Nd\u00ebrtoni nj\u00eb kala me batanije dhe lexoni me elektrik dore."}, {"title": "Mbr\u00ebmje Spa Familjare", "description": "Banjo p\u00ebr k\u00ebmb\u00eb, krehje flok\u00ebsh, muzik\u00eb e but\u00eb \u2013 qet\u00ebsi dhe af\u00ebrsi."}], "Creative": [{"title": "Disko n\u00eb Dhom\u00ebn e Ndenjes", "description": "15 minuta fest\u00eb me k\u00ebrcim. \u00c7do f\u00ebmij\u00eb zgjedh nj\u00eb k\u00ebng\u00eb!"}, {"title": "Teat\u00ebr Kukullash / Shfaqje Lodrash", "description": "Krijoni histori me \u00e7orape, lodra ose kukulla letre."}, {"title": "Veshje & Loj\u00ebra Role", "description": "Luani si eksplorues, kuzhinier\u00eb apo astronaut\u00eb \u2013 p\u00ebrdorni sende sht\u00ebpie."}, {"title": "Shfaqje Talentesh Mini", "description": "Secili mund t\u00eb tregoj\u00eb nj\u00eb k\u00ebng\u00eb, shaka apo num\u00ebr!"}, {"title": "Sfid\u00eb Nd\u00ebrtimi", "description": "P\u00ebrdorni LEGO, jast\u00ebk\u00eb apo blloqe p\u00ebr t\u00eb krijuar di\u00e7ka s\u00eb bashku."}], "Emotional": [{"title": "Rrethi Familjar", "description": "Secili ndan pjes\u00ebn m\u00eb t\u00eb mir\u00eb t\u00eb dit\u00ebs. Forcon d\u00ebgjimin dhe af\u00ebrsin\u00eb."}, {"title": "Kavanozi i Mir\u00ebnjohjes", "description": "Secili shkruan ose vizaton di\u00e7ka q\u00eb e ka dashur sot."}, {"title": "Muri i Kujtimeve", "description": "Vendosni nj\u00eb foto apo vizatoni di\u00e7ka t\u00eb bukur t\u00eb jav\u00ebs."}, {"title": "Ylli i Mir\u00ebsis\u00eb", "description": "Zgjidhni kush ishte m\u00eb i mir\u00eb sot. Ai/ajo mban nj\u00eb yll nes\u00ebr."}], "Rainy Day": [{"title": "Banjo me Flluska + K\u00ebng\u00eb", "description": "Koha e banj\u00ebs b\u00ebhet loj\u00eb me boj\u00ebra, lodra dhe muzik\u00eb."}, {"title": "Pist\u00eb Pengesash Br\u00ebnda", "description": "Me jast\u00ebk\u00eb, shirita dhe tunele. L\u00ebrini f\u00ebmij\u00ebt ta dizajnojn\u00eb!"}, {"title": "Mbr\u00ebmje me Film + Popcorn", "description": "F\u00ebmij\u00ebt zgjedhin filmin. Batanije dhe ngroht\u00ebsi."}, {"title": "Yoga ose Shtrirje S\u00eb Bashku", "description": "Thirreni 'shtrirje me buz\u00ebqeshje' \u2013 f\u00ebmij\u00ebt duan t\u00eb kopjojn\u00eb pozat."}, {"title": "Histori me Audio + Vizatim", "description": "D\u00ebgjoni p\u00ebrralla dhe vizatoni at\u00eb q\u00eb imagjinoni."}, {"title": "Hart\u00eb \u00cbndrrash n\u00eb Kolazh", "description": "Prisni imazhe nga revista dhe krijoni nj\u00eb 'hart\u00eb \u00ebndrrash' familjare."}]}};
+
+    const labels = {
+      en: {
+        "Outdoor": "🌿 Outdoor",
+        "Cozy Home": "🏠 Cozy Home",
+        "Creative": "🎭 Creative",
+        "Emotional": "💬 Emotional",
+        "Rainy Day": "🌧️ Rainy Day"
+      },
+      de: {
+        "Outdoor": "🌿 Draußen",
+        "Cozy Home": "🏠 Zuhause",
+        "Creative": "🎭 Kreativ",
+        "Emotional": "💬 Emotional",
+        "Rainy Day": "🌧️ Regentag"
+      },
+      sq: {
+        "Outdoor": "🌿 Në Natyrë",
+        "Cozy Home": "🏠 Në Shtëpi",
+        "Creative": "🎭 Kreative",
+        "Emotional": "💬 Emocionale",
+        "Rainy Day": "🌧️ Ditë me shi"
+      }
+    };
+
+    const categoryKeys = ["Outdoor", "Cozy Home", "Creative", "Emotional", "Rainy Day"];
+    let lang = "en";
+    let cat = "Outdoor";
+    let shown = {};
+    let history = {};
+
+    function renderCats() {
+      const div = document.getElementById("category-buttons");
+      div.innerHTML = "";
+      categoryKeys.forEach(k => {
+        const btn = document.createElement("button");
+        btn.className = "cat-btn";
+        btn.innerText = labels[lang][k];
+        btn.onclick = () => setCat(k);
+        div.appendChild(btn);
+      });
+      setCat(cat);
+    }
+
+    function setCat(k) {
+      cat = k;
+      document.getElementById("category").innerText = labels[lang][k];
+      renderHistory();
+    }
+
+    function setLang(l) {
+      lang = l;
+      shown[lang] = shown[lang] || {};
+      history[lang] = history[lang] || {};
+      renderCats();
+    }
+
+    function renderHistory() {
+      const h = history[lang]?.[cat] || [];
+      const box = document.getElementById("history");
+      box.innerHTML = "";
+      h.forEach(a => {
+        const div = document.createElement("div");
+        div.className = "history-card";
+        div.innerText = a.title;
+        box.appendChild(div);
+      });
+    }
+
+    function generate() {
+      const list = data[lang][cat];
+      if (!list) return;
+      shown[lang][cat] = shown[lang][cat] || [];
+      const unused = list.map((_, i) => i).filter(i => !shown[lang][cat].includes(i));
+      if (unused.length === 0) shown[lang][cat] = [];
+      const idx = unused[Math.floor(Math.random() * unused.length)];
+      const a = list[idx];
+      shown[lang][cat].push(idx);
+      document.getElementById("activity-title").innerText = a.title;
+      document.getElementById("activity-desc").innerText = a.description;
+      history[lang][cat] = history[lang][cat] || [];
+      history[lang][cat].unshift(a);
+      if (history[lang][cat].length > 7) history[lang][cat].pop();
+      renderHistory();
+    }
+
+    window.onload = () => {
+      setLang("en");
+      document.querySelectorAll(".lang-btn").forEach(btn =>
+        btn.addEventListener("click", () => setLang(btn.dataset.lang))
+      );
+      document.getElementById("generate-btn").addEventListener("click", generate);
+    };
+  </script>
+</body>
+</html>
